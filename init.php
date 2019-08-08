@@ -1,20 +1,21 @@
 <?php
-try {
-	spl_autoload_register( function ( $className ) {
 
-		if ( preg_match( '/^DevLog\\.*/', $className ) ) {
+/*
+ * Register class autoload statement
+ *
+ * */
+spl_autoload_register( function ( $className ) {
 
-			$className = preg_replace( '/^DevLog/', 'src' );
+	if ( preg_match( '/^DevLog\\.*/', $className ) ) {
 
-			$className = str_replace( "\\", DIRECTORY_SEPARATOR, $className );
+		$className = preg_replace( '/^DevLog/', 'src' );
 
-			include_once( __DIR__ . "/$className.php" );
-		}
-	} );
+		$className = str_replace( "\\", DIRECTORY_SEPARATOR, $className );
 
-} catch ( Exception $e ) {
-	throw new Exception( 'Cannot include class php file.' );
-}
+		include_once( __DIR__ . "/$className.php" );
+	}
+} );
+
 
 if ( ! defined( "DEV_LOG" ) ) {
 	define( "DEV_LOG", true );

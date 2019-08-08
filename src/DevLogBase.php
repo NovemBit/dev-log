@@ -1,10 +1,6 @@
 <?php
 
 namespace DevLog;
-/*
- * Dev log
- * Simple and Powerful debugging tool
- * */
 
 use DevLog\DataMapper\Models\Log;
 use DevLog\DataMapper\Models\LogData;
@@ -18,23 +14,17 @@ class DevLogBase {
 
 	public static $scriptVersion = "1.0.4";
 
-	private static $log;
-
-	private static $_log_directory;
-
-	private static $_logs_hash;
-
-	private static $_track_directory;
-
 	public static $messageTypes = [];
-
-	public static $logTrackers = [];
-
-	public static $hash_length = 12;
 
 	public static $max_served_logs_count = 100;
 
+	private static $log;
+
 	private static $db;
+
+	private static $_logs_hash;
+
+	public static $hash_length = 12;
 
 	/**
 	 * Register logger
@@ -43,21 +33,13 @@ class DevLogBase {
 	 */
 	public static function register() {
 
-		$ip_validation = DevLogHelper::ipAddressValidation( DEV_LOG_IP_ADDRESSES );
-
-		if ( DEV_LOG_DEBUGGER == true ) {
-			if ( $ip_validation ) {
-				new DevLogController();
-			}
-		}
-
 		/*
 		 * Register request shutdown actions
 		 * Then save log file as json
 		 * And register inline debugger
 		 * */
 		register_shutdown_function(
-			function () use ( $ip_validation ) {
+			function () {
 
 				/*
 				 * Register custom shutdown actions
@@ -68,14 +50,6 @@ class DevLogBase {
 				 * Save all logged data
 				 * */
 				\DevLog\DataMapper\Mappers\Log::save( self::$log );
-
-				/**
-				 * If DEV_LOG_INLINE_DEBUGGER is true and not ajax request
-				 * Then load inline debugger on every request
-				 * */
-				if ( DEV_LOG_DEBUGGER == true && DEV_LOG_INLINE_DEBUGGER == true && $ip_validation && ! DevLogHelper::isXHRFromServer( $_SERVER ) ) {
-					self::registerInlineDebugger();
-				}
 			}
 		);
 
@@ -106,14 +80,6 @@ class DevLogBase {
 	}
 
 	/**
-	 * Render inline debugger
-	 */
-	private static function registerInlineDebugger() {
-		$iframe = '<iframe style="border:none;" width="100%" height="38" src="/' . DEV_LOG_URL_PATH . '/inline/' . self::getLogHash() . '">Your browser does not support iframe.</iframe>';
-		echo '<div id="DevLogInline" style="height:38px;z-index:999999999 !important; position: fixed;width:100%;bottom:0;left:0;">' . $iframe . '</div>';
-	}
-
-	/**
 	 * Register start script
 	 * @throws \Exception
 	 */
@@ -125,16 +91,16 @@ class DevLogBase {
 
 		self::getLog()->setName( self::getLogHash() );
 
-		self::getLog()->getDataList()->addData( new LogData(null, 'start_time', microtime( true ) ) );
-		self::getLog()->getDataList()->addData( new LogData(null, '_server', ( isset( $_SERVER ) ? $_SERVER : [] ) ) );
-		self::getLog()->getDataList()->addData( new LogData(null, '_session', ( isset( $_SESSION ) ? $_SESSION : [] ) ) );
-		self::getLog()->getDataList()->addData( new LogData(null, '_env', ( isset( $_ENV ) ? $_ENV : [] ) ) );
-		self::getLog()->getDataList()->addData( new LogData(null, '_get', ( isset( $_GET ) ? $_GET : [] ) ) );
-		self::getLog()->getDataList()->addData( new LogData(null, '_post', ( isset( $_POST ) ? $_POST : [] ) ) );
-		self::getLog()->getDataList()->addData( new LogData(null, '_cookie', ( isset( $_COOKIE ) ? $_COOKIE : [] ) ) );
-		self::getLog()->getDataList()->addData( new LogData(null, '_files', ( isset( $_FILES ) ? $_FILES : [] ) ) );
-		self::getLog()->getDataList()->addData( new LogData(null, 'request_headers', ( function_exists( 'getallheaders' ) ? getallheaders() : [] ) ) );
-		self::getLog()->getDataList()->addData( new LogData(null, 'response_headers', headers_list() ) );
+		self::getLog()->getDataList()->addData( new LogData( null, 'start_time', microtime( true ) ) );
+		self::getLog()->getDataList()->addData( new LogData( null, '_server', ( isset( $_SERVER ) ? $_SERVER : [] ) ) );
+		self::getLog()->getDataList()->addData( new LogData( null, '_session', ( isset( $_SESSION ) ? $_SESSION : [] ) ) );
+		self::getLog()->getDataList()->addData( new LogData( null, '_env', ( isset( $_ENV ) ? $_ENV : [] ) ) );
+		self::getLog()->getDataList()->addData( new LogData( null, '_get', ( isset( $_GET ) ? $_GET : [] ) ) );
+		self::getLog()->getDataList()->addData( new LogData( null, '_post', ( isset( $_POST ) ? $_POST : [] ) ) );
+		self::getLog()->getDataList()->addData( new LogData( null, '_cookie', ( isset( $_COOKIE ) ? $_COOKIE : [] ) ) );
+		self::getLog()->getDataList()->addData( new LogData( null, '_files', ( isset( $_FILES ) ? $_FILES : [] ) ) );
+		self::getLog()->getDataList()->addData( new LogData( null, 'request_headers', ( function_exists( 'getallheaders' ) ? getallheaders() : [] ) ) );
+		self::getLog()->getDataList()->addData( new LogData( null, 'response_headers', headers_list() ) );
 //		self::getLog()->getDataList()->addData( new LogData(null, 'php_info', self::getPhpInfo() ) );
 
 	}
@@ -205,34 +171,6 @@ class DevLogBase {
 	/**
 	 * @return string
 	 */
-	public static function getLogDirectory() {
-		if ( ! isset( self::$_log_directory ) ) {
-			self::$_log_directory = dirname( __FILE__ ) . '/../runtime/logger';
-		}
-
-		return self::$_log_directory;
-	}
-
-
-	/**
-	 * @return string
-	 */
-	public static function getTrackDirectory() {
-		if ( ! isset( self::$_track_directory ) ) {
-			self::$_track_directory = dirname( __FILE__ ) . '/../runtime/track';
-		}
-
-		return self::$_track_directory;
-	}
-
-	public static function getTrackers() {
-		return [];
-	}
-
-
-	/**
-	 * @return string
-	 */
 	public static function getLogHash() {
 		if ( ! isset( self::$_logs_hash ) ) {
 			self::$_logs_hash = substr( md5( uniqid( rand(), true ) ), 0, static::$hash_length );
@@ -257,29 +195,6 @@ class DevLogBase {
 			$category,
 			microtime( true )
 		) );
-	}
-
-
-	/**
-	 * @param int $offset
-	 * @param int $limit
-	 *
-	 * @return array
-	 */
-	public static function getLogs( $offset = 0, $limit = 100 ) {
-		$files = glob( self::getLogDirectory() . '/*' );
-		usort( $files, function ( $a, $b ) {
-			return filemtime( $a ) < filemtime( $b );
-		} );
-		$files = array_slice( $files, $offset, $limit );
-
-
-		$result = [];
-		foreach ( $files as $file ) {
-			$result[ basename( $file ) ] = json_decode( file_get_contents( $file ) );
-		}
-
-		return $result;
 	}
 
 	/**
