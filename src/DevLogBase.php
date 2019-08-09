@@ -33,28 +33,81 @@ class DevLogBase {
 	 */
 	public static function register() {
 
+		if( DEV_LOG == false ){
+			return;
+		}
+
 		/*
-		 * Register request shutdown actions
-		 * Then save log file as json
-		 * And register inline debugger
+		 * Default constants init.
 		 * */
-		register_shutdown_function(
-			function () {
+		self::defineConstants();
 
-				/*
-				 * Register custom shutdown actions
-				 * */
-				static::registerShutDownActions();
+		$exclusion = false;
 
-				/*
-				 * Save all logged data
-				 * */
-				\DevLog\DataMapper\Mappers\Log::save( self::$log );
-			}
-		);
+		/*
+		 * Check if is callable
+		 * */
+		if ( is_callable( DEV_LOG_EXCLUSION ) ) {
+			$exclusion = call_user_func( DEV_LOG_EXCLUSION );
+		}
 
-		static::registerStartActions();
+		if ( $exclusion !== true ) {
+			/*
+			 * Register request shutdown actions
+			 * Then save log file as json
+			 * And register inline debugger
+			 * */
+			register_shutdown_function(
+				function () {
 
+					/*
+					 * Register custom shutdown actions
+					 * */
+					static::registerShutDownActions();
+
+					/*
+					 * Save all logged data
+					 * */
+					\DevLog\DataMapper\Mappers\Log::save( self::$log );
+				}
+			);
+
+			static::registerStartActions();
+		}
+
+	}
+
+	/**
+	 * @return bool
+	 */
+	public static function exclusionStatus() {
+		return false;
+	}
+
+	/**
+	 *
+	 */
+	private static function defineConstants() {
+
+		if ( ! defined( "DEV_LOG" ) ) {
+			define( "DEV_LOG", true );
+		}
+
+		if ( ! defined( "DEV_LOG_EXCLUSION" ) ) {
+			define( "DEV_LOG_EXCLUSION", [ self::class, 'exclusionStatus' ] );
+		}
+
+		if ( ! defined( "DEV_LOG_DB" ) ) {
+			define( "DEV_LOG_DB", [
+				'pdo' => 'sqlite:' . dirname( __FILE__ ) . '/../runtime/db/DevLog.db',
+//				'pdo'      => 'mysql:host=localhost;dbname=swanson',
+//				'username' => 'root',
+//				'password' => 'Novem9bit',
+//				'config'   => [
+//					\PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => false
+//				]
+			] );
+		}
 	}
 
 	/**
