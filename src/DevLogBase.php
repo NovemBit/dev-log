@@ -38,7 +38,7 @@ class DevLogBase {
 		/**
 		 * If DevLog disabled then prevent registration
 		 * */
-		if ( DEV_LOG == false ) {
+		if ( defined('DEV_LOG') && DEV_LOG == false ) {
 			return;
 		}
 
