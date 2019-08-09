@@ -26,6 +26,8 @@ class DevLogBase {
 
 	public static $hash_length = 12;
 
+	public static $registered = false;
+
 	/**
 	 * Register logger
 	 * To initialize logger should run this action
@@ -33,8 +35,20 @@ class DevLogBase {
 	 */
 	public static function register() {
 
-		if( DEV_LOG == false ){
+		/**
+		 * If DevLog disabled then prevent registration
+		 * */
+		if ( DEV_LOG == false ) {
 			return;
+		}
+
+		/*
+		 * To avoid second time registration
+		 * Of methods
+		 * */
+		if ( self::$registered == true ) {
+			return;
+			/*throw new \Exception( "DevLog already registered." );*/
 		}
 
 		/*
@@ -75,6 +89,8 @@ class DevLogBase {
 			static::registerStartActions();
 		}
 
+		self::$registered = true;
+
 	}
 
 	/**
@@ -85,7 +101,7 @@ class DevLogBase {
 	}
 
 	/**
-	 *
+	 * Define standard constants
 	 */
 	private static function defineConstants() {
 
@@ -100,12 +116,18 @@ class DevLogBase {
 		if ( ! defined( "DEV_LOG_DB" ) ) {
 			define( "DEV_LOG_DB", [
 				'pdo' => 'sqlite:' . dirname( __FILE__ ) . '/../runtime/db/DevLog.db',
-//				'pdo'      => 'mysql:host=localhost;dbname=swanson',
-//				'username' => 'root',
-//				'password' => 'Novem9bit',
-//				'config'   => [
-//					\PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => false
-//				]
+
+				/*
+				 * Connect of mysql
+				 ```
+				    'pdo'      => 'mysql:host=localhost;dbname=my_db',
+					'username' => 'root',
+					'password' => 'root',
+					'config'   => [
+						\PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => false
+					]
+				```
+				*/
 			] );
 		}
 	}
@@ -154,7 +176,7 @@ class DevLogBase {
 		self::getLog()->getDataList()->addData( new LogData( null, '_files', ( isset( $_FILES ) ? $_FILES : [] ) ) );
 		self::getLog()->getDataList()->addData( new LogData( null, 'request_headers', ( function_exists( 'getallheaders' ) ? getallheaders() : [] ) ) );
 		self::getLog()->getDataList()->addData( new LogData( null, 'response_headers', headers_list() ) );
-//		self::getLog()->getDataList()->addData( new LogData(null, 'php_info', self::getPhpInfo() ) );
+		/*self::getLog()->getDataList()->addData( new LogData(null, 'php_info', self::getPhpInfo() ) );*/
 
 	}
 
