@@ -38,7 +38,7 @@ class DevLogBase {
 		/**
 		 * If DevLog disabled then prevent registration
 		 * */
-		if ( defined('DEV_LOG') && DEV_LOG == false ) {
+		if ( defined( 'DEV_LOG' ) && DEV_LOG == false ) {
 			return;
 		}
 
@@ -190,6 +190,14 @@ class DevLogBase {
 	 */
 	public static function errorHandler( $errorNumber, $errorString, $errorFile, $errorLine ) {
 
+		if ( ! defined( "DEV_LOG_PHP_REPORTING_LEVEL" ) ) {
+			define( 'DEV_LOG_PHP_REPORTING_LEVEL', E_ERROR );
+		}
+
+		if ( $errorNumber > DEV_LOG_PHP_REPORTING_LEVEL ) {
+			return;
+		}
+
 		$types = [
 			E_ERROR             => "E_ERROR",
 			E_WARNING           => "E_WARNING",
@@ -208,7 +216,9 @@ class DevLogBase {
 			E_USER_DEPRECATED   => "E_USER_DEPRECATED",
 			E_ALL               => "E_ALL",
 		];
-		$type  = $types[ $errorNumber ] ?? "UNDEFINED";
+
+		$type = $types[ $errorNumber ] ?? "UNDEFINED";
+
 		self::log( "error",
 			[
 				"type"    => $type,

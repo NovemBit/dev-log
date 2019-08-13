@@ -37,7 +37,7 @@ class Log {
 			$stmt = $db->prepare( $sql );
 			$stmt->bindValue( ':log_id', $log_id );
 			$stmt->bindValue( ':key', $item->getKey() );
-			$stmt->bindValue( ':value', $item->getValue(LogData::STRING) );
+			$stmt->bindValue( ':value', $item->getValue( LogData::STRING ) );
 
 			$stmt->execute();
 		}
@@ -52,7 +52,7 @@ class Log {
 			$stmt = $db->prepare( $sql );
 			$stmt->bindValue( ':log_id', $log_id );
 			$stmt->bindValue( ':type', $item->getType() );
-			$stmt->bindValue( ':message', $item->getMessage(LogMessage::STRING) );
+			$stmt->bindValue( ':message', $item->getMessage( LogMessage::STRING ) );
 			$stmt->bindValue( ':category', $item->getCategory() );
 			$stmt->bindValue( ':time', $item->getTime() );
 
@@ -199,98 +199,6 @@ class Log {
 		}
 
 		return $list;
-
-	}
-
-
-	public static function migration() {
-		$sqlite = <<<sql
-CREATE TABLE IF NOT EXISTS logs
-(
-    id   INTEGER
-        constraint logs_pk
-            primary key autoincrement,
-    name varchar(16),
-    type varchar(32)
-);
-
-create unique index logs_hash_uindex
-    on logs (name);
-
-create unique index logs_id_uindex
-    on logs (id);
-
-CREATE TABLE IF NOT EXISTS logs_data
-(
-    id     INTEGER
-        constraint logs_data_pk
-            primary key autoincrement,
-    log_id INTEGER,
-    key    varchar(255),
-    value  text
-);
-
-create index logs_data_log_id_index
-    on logs_data (log_id);
-
-CREATE TABLE IF NOT EXISTS  logs_messages
-(
-    id       INTEGER
-        constraint logs_messages_pk
-            primary key autoincrement,
-    type     varchar(64),
-    message  text,
-    category text,
-    time     REAL,
-    log_id   INTEGER
-);
-
-create index logs_messages_log_id_index
-    on logs_messages (log_id);
-
-sql;
-
-		$mysql = <<<sql
-CREATE TABLE `logs`
-(
-    `id`   INT PRIMARY KEY AUTO_INCREMENT,
-    NAME VARCHAR(16),
-    TYPE VARCHAR(32)      
-);
-
-CREATE UNIQUE INDEX `logs_hash_uindex`
-    ON `logs` (NAME);
-
-CREATE UNIQUE INDEX `logs_id_uindex`
-    ON `logs` (id);
-
-CREATE TABLE `logs_data`
-(
-    `id`     INT PRIMARY KEY AUTO_INCREMENT,
-    `log_id` INT,
-    `key`    VARCHAR(255),
-    `value`  TEXT
-   
-);
-
-CREATE INDEX `logs_data_log_id_index`
-    ON `logs_data` (log_id);
-
-CREATE TABLE `logs_messages`
-(
-    `id`       INT PRIMARY KEY AUTO_INCREMENT,
-    `type`     VARCHAR(64),
-    `message`  TEXT,
-    `category` TEXT,
-    `time`     REAL,
-    `log_id`   INT
-   
-        
-);
-
-CREATE INDEX `logs_messages_log_id_index`
-    ON `logs_messages` (log_id);
-sql;
 
 	}
 
