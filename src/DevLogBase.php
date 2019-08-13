@@ -28,6 +28,19 @@ class DevLogBase {
 
 	public static $registered = false;
 
+
+	/**
+	 * Prepare to register
+	 */
+	public static function prepare(){
+
+		/*
+		 * Default constants init.
+		 * */
+		self::defineConstants();
+
+	}
+
 	/**
 	 * Register logger
 	 * To initialize logger should run this action
@@ -51,10 +64,7 @@ class DevLogBase {
 			/*throw new \Exception( "DevLog already registered." );*/
 		}
 
-		/*
-		 * Default constants init.
-		 * */
-		self::defineConstants();
+		self::prepare();
 
 		$exclusion = false;
 
