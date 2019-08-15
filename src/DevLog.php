@@ -127,16 +127,4 @@ final class DevLog extends DevLogBase {
 		parent::registerStartActions();
 		static::important( "Page started." );
 	}
-
-
-	/**
-	 * @return array
-	 */
-	public static function getTrackers() {
-		if ( ! defined( "DEV_LOG_TRACKERS" ) ) {
-			return parent::getTrackers();
-		}
-
-		return array_merge( parent::getTrackers(), include_once( DEV_LOG_TRACKERS ) );
-	}
 }

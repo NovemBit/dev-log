@@ -3,6 +3,7 @@
 namespace DevLog\DataMapper\Models;
 
 use DevLog\DevLogHelper;
+use Exception;
 
 class LogMessage {
 
@@ -29,7 +30,7 @@ class LogMessage {
 	 * @param $category
 	 * @param $time
 	 *
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	public function __construct( $id, $type, $message, $category, $time ) {
 
@@ -59,7 +60,7 @@ class LogMessage {
 	 * @param $type
 	 *
 	 * @return mixed
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	public function getMessage( $type = null ) {
 
@@ -78,7 +79,7 @@ class LogMessage {
 	/**
 	 * @param mixed $message
 	 *
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	public function setMessage( $message ) {
 		if ( ! is_string( $message ) ) {

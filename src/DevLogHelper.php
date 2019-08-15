@@ -197,9 +197,6 @@ class DevLogHelper {
 	/**
 	 * @param $array
 	 *
-	 * @param string $title
-	 * @param int $depth
-	 *
 	 * @return string
 	 */
 	public static function arrayToHtmlTable( $array ) {
@@ -212,9 +209,6 @@ class DevLogHelper {
 
 	/**
 	 * @param $array
-	 *
-	 * @param $title
-	 * @param int $depth
 	 *
 	 * @return string
 	 */

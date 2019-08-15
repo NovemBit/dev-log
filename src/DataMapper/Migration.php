@@ -4,12 +4,13 @@ namespace DevLog\DataMapper;
 
 
 use DevLog\DevLog;
+use Exception;
 
 class Migration {
 
 
 	/**
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	public static function mysql() {
 		$sql = file_get_contents( __DIR__ . '/Migration/mysql.sql' );
@@ -23,7 +24,7 @@ class Migration {
 
 	/**
 	 * @return bool
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	public static function sqlite() {
 		$sql = file_get_contents( __DIR__ . '/Migration/sqlite.sql' );

@@ -3,6 +3,7 @@
 namespace DevLog\DataMapper\Models;
 
 use DevLog\DevLogHelper;
+use Exception;
 
 class LogData {
 
@@ -23,7 +24,7 @@ class LogData {
 	 * @param $key
 	 * @param $value
 	 *
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	public function __construct( $id, $key, $value ) {
 		$this->setId( $id );
@@ -50,7 +51,7 @@ class LogData {
 	 * @param $type
 	 *
 	 * @return mixed
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	public function getValue( $type = null ) {
 
@@ -70,7 +71,7 @@ class LogData {
 	/**
 	 * @param mixed $value
 	 *
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	public function setValue( $value ) {
 		if ( ! is_string( $value ) ) {

@@ -7,9 +7,10 @@
   ],
   "minimum-stability": "stable",
   "require": {
-    "php": ">=7.0",
+    "php": ">=5.6",
     "ext-json": "*",
-    "ext-pdo": "*"
+    "ext-pdo": "*",
+    "ext-apache": "*"
   },
   "require-dev": {
   },

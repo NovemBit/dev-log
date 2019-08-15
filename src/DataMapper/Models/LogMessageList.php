@@ -1,4 +1,5 @@
 <?php
+
 namespace DevLog\DataMapper\Models;
 
 class LogMessageList {
@@ -15,9 +16,10 @@ class LogMessageList {
 	 *
 	 * @return LogMessage
 	 */
-	public function addMessage(LogMessage $data){
+	public function addMessage( LogMessage $data ) {
 		$this->list[] = $data;
-		return end($this->list);
+
+		return end( $this->list );
 	}
 
 
@@ -27,11 +29,16 @@ class LogMessageList {
 	 * @return LogMessage|null
 	 */
 	public function one( $last = true ) {
-		if ( $last ) {
-			return end( $this->list ) ?? null;
-		} else return $this->getList()[0] ?? null;
-	}
+		if ( empty( $this->list ) ) {
+			return null;
+		}
 
+		if ( $last ) {
+			return end( $this->list );
+		} else {
+			return $this->getList()[0];
+		}
+	}
 
 
 	/**

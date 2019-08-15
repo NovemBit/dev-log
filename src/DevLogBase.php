@@ -5,7 +5,8 @@ namespace DevLog;
 use DevLog\DataMapper\Models\Log;
 use DevLog\DataMapper\Models\LogData;
 use DevLog\DataMapper\Models\LogMessage;
-use PDOException;
+use Exception;
+use PDO;
 
 
 class DevLogBase {
@@ -44,7 +45,7 @@ class DevLogBase {
 	/**
 	 * Register logger
 	 * To initialize logger should run this action
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	public static function register() {
 
@@ -92,7 +93,7 @@ class DevLogBase {
 					/*
 					 * Save all logged data
 					 * */
-					\DevLog\DataMapper\Mappers\Log::save( self::$log );
+					DataMapper\Mappers\Log::save( self::$log );
 				}
 			);
 
@@ -143,22 +144,23 @@ class DevLogBase {
 	}
 
 	/**
-	 * @return \PDO
-	 * @throws \Exception
+	 * @return PDO
+	 * @throws Exception
 	 */
 	public static function getDb() {
 
+
 		if ( ! isset( self::$db ) && defined( 'DEV_LOG_DB' ) ) {
-			if ( ! isset( DEV_LOG_DB['pdo'] ) ) {
-				throw new \Exception( 'DEV_LOG_DB["pdo"] not found' );
+			if ( ! array_key_exists( 'pdo',DEV_LOG_DB ) ) {
+				throw new Exception( 'DEV_LOG_DB["pdo"] not found' );
 			}
 
 			$pdo      = DEV_LOG_DB['pdo'];
-			$username = DEV_LOG_DB['username'] ?? 'root';
-			$password = DEV_LOG_DB['password'] ?? null;
-			$config   = DEV_LOG_DB['config'] ?? [];
+			$username = array_key_exists('username',DEV_LOG_DB) ? DEV_LOG_DB['username'] : 'root';
+			$password = array_key_exists('password',DEV_LOG_DB) ? DEV_LOG_DB['password'] : null;
+			$config   = array_key_exists('config',DEV_LOG_DB) ? DEV_LOG_DB['config'] : [];
 
-			self::$db = new \PDO( $pdo, $username, $password, $config );
+			self::$db = new PDO( $pdo, $username, $password, $config );
 		}
 
 		return self::$db;
@@ -166,7 +168,7 @@ class DevLogBase {
 
 	/**
 	 * Register start script
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	public static function registerStartActions() {
 
@@ -196,7 +198,7 @@ class DevLogBase {
 	 * @param $errorFile
 	 * @param $errorLine
 	 *
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	public static function errorHandler( $errorNumber, $errorString, $errorFile, $errorLine ) {
 
@@ -227,7 +229,7 @@ class DevLogBase {
 			E_ALL               => "E_ALL",
 		];
 
-		$type = $types[ $errorNumber ] ?? "UNDEFINED";
+		$type = isset($types[ $errorNumber ]) ? $types[ $errorNumber ] : "UNDEFINED";
 
 		self::log( "error",
 			[
@@ -242,7 +244,7 @@ class DevLogBase {
 
 	/**
 	 * Register shutdown script
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	public static function registerShutDownActions() {
 
@@ -280,7 +282,7 @@ class DevLogBase {
 	 * @param string $category
 	 *
 	 * @return LogMessage
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	public static function log( $type, $message, $category = "default" ) {
 		return self::getLog()->getMessageList()->addMessage( new LogMessage(
