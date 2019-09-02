@@ -9,8 +9,7 @@
   "require": {
     "php": ">=5.6",
     "ext-json": "*",
-    "ext-pdo": "*",
-    "ext-apache": "*"
+    "ext-pdo": "*"
   },
   "require-dev": {
   },
