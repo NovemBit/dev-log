@@ -184,14 +184,14 @@ class Log {
 			}
 
 			/** @var \DevLog\DataMapper\Models\Log $log */
-			if ( in_array( 'data', $with ) && ! empty( $row['data_key'] ) && ! in_array( $row['data_id'], $data_ids ) ) {
-				$data_ids[] = $row['data_id'];
+			if ( in_array( 'data', $with ) && ! empty( $row['data_key'] ) && ! isset( $data_ids[$row['data_id']] ) ) {
+				$data_ids[$row['data_id']] = true;
 				$log->getDataList()->addData( new LogData( $row['data_id'], $row['data_key'], $row['data_value'] ) );
 			}
 
 			/** @var \DevLog\DataMapper\Models\Log $log */
-			if ( in_array( 'messages', $with ) && ! empty( $row['message_type'] ) && ! in_array( $row['message_id'], $messages_ids ) ) {
-				$messages_ids[] = $row['message_id'];
+			if ( in_array( 'messages', $with ) && ! empty( $row['message_type'] ) && ! isset( $messages_ids[$row['message_id']] ) ) {
+			    $messages_ids[$row['message_id']] = true;
 				$log->getMessageList()->addMessage(
 					new LogMessage( $row['message_id'], $row['message_type'], $row['message_message'], $row['message_category'], $row['message_time'] )
 				);
